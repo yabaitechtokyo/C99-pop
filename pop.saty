@@ -15,19 +15,19 @@ document '<
   }
   +p-noindent{\bold{書籍+電子版: \large{1500円}}}
   +p{}
-  +p-noindent{\bold{DLカード(電子版のみ): \large{1000円}}}
+  +p-noindent{\bold{電子版のみ: \large{1000円}}}
   >
   +p{}
   +twocolumn ?:(0.65) <
   +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.5}}}
   +listing-with-gap(0mm) {
-     * SATySFi クラスファイル開発の『コードを書く』以外のTips
      * ”Python” Cookbook: Recipes for Eating Python
+     * SATySFi クラスファイル開発の『コードを書く』以外のTips
      * アスペクト指向プログラミングで C++ プログラム用モニタを実装した話
      * F-ing modulesの型検査とコンパイル手法
   }
   +p-noindent{\bold{書籍+電子版: \large{1200円}}}
-  +p-noindent{\bold{DLカード(電子版のみ): \large{1000円}}}
+  +p-noindent{\bold{電子版のみ: \large{1000円}}}
   > <
   +front-image(`./images/yabaitechvol5.jpg`);
   >
@@ -40,11 +40,10 @@ document '<
      * ゲーム紹介記事 ー忙しくないプログラマのためのー
      * 複数マシンでの実験をAnsibleとかでシュッとした話 ー実験編ー
      * (おまけ記事) Let's verify your C program!
-     * (鋭意執筆中)
      * あとがき ーyabaitech.tokyoを支える技術ー
   }
   +p-noindent{\bold{書籍+電子版: \large{800円}}}
-  +p-noindent{\bold{DLカード (電子版のみ): \large{500円}}}
+  +p-noindent{\bold{電子版のみ: \large{500円}}}
   >
 
   %%%%%%%%%%%%%%%%%%%%% 2枚目 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,7 +74,7 @@ document '<
     * 時間オートマトン入門
     * Twitchゲーム配信観戦ガイド
   }
-  +p-noindent{\bold{DLカード (電子版のみ): \large{1000円}}}
+  +p-noindent{\bold{電子版: \large{1000円}}}
   > <
   +front-image(`./images/yabaitechvol2.jpg`);
   >
@@ -87,9 +86,8 @@ document '<
   +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.1}}}
   +listing-with-gap(10mm) {
     * RNNからのオートマトン学習
-    * "Schemeにおけるスタックフレームの実装(Draft)"を実装する
     * 自然な様相論理をつくる
   }
-  +p-noindent{\bold{DLカード (電子版のみ): \large{500円}}}
+  +p-noindent{\bold{電子版: \large{500円}}}
   >
  >
