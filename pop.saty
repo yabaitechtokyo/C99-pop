@@ -1,0 +1,95 @@
+% -*- coding: utf-8 -*-
+@require: itemize
+
+@import: pop
+
+document '<
+  +twocolumn ?:(0.4) <
+  +front-image(`./images/yabaitechvol6.jpg`);
+  > <
+  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.6}}}
+  +listing-with-gap(4mm) {
+    * テキサスホールデムの役判定に見る高速化テクニック
+    * GNU EmacsでLaTeX文書を書く話
+    * 高速SATソルバーを支える技術
+  }
+  +p-noindent{\bold{書籍+電子版: \large{1500円}}}
+  +p{}
+  +p-noindent{\bold{DLカード(電子版のみ): \large{1000円}}}
+  >
+  +p{}
+  +twocolumn ?:(0.65) <
+  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.5}}}
+  +listing-with-gap(0mm) {
+     * SATySFi クラスファイル開発の『コードを書く』以外のTips
+     * ”Python” Cookbook: Recipes for Eating Python
+     * アスペクト指向プログラミングで C++ プログラム用モニタを実装した話
+     * F-ing modulesの型検査とコンパイル手法
+  }
+  +p-noindent{\bold{書籍+電子版: \large{1200円}}}
+  +p-noindent{\bold{DLカード(電子版のみ): \large{1000円}}}
+  > <
+  +front-image(`./images/yabaitechvol5.jpg`);
+  >
+  +p{}
+  +twocolumn ?:(0.35) <
+  +front-image(`./images/yabaitechvol4.jpg`);
+  > <
+  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.4}}}
+  +listing-with-gap(0mm) {
+     * ゲーム紹介記事 ー忙しくないプログラマのためのー
+     * 複数マシンでの実験をAnsibleとかでシュッとした話 ー実験編ー
+     * (おまけ記事) Let's verify your C program!
+     * (鋭意執筆中)
+     * あとがき ーyabaitech.tokyoを支える技術ー
+  }
+  +p-noindent{\bold{書籍+電子版: \large{800円}}}
+  +p-noindent{\bold{DLカード (電子版のみ): \large{500円}}}
+  >
+
+  %%%%%%%%%%%%%%%%%%%%% 2枚目 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  +twocolumn ?:(0.4) <
+  +front-image(`./images/yabaitechvol3.jpg`);
+  > <
+  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.3}}}
+  +listing-with-gap(0mm) {
+    * Schreier-Sims のアルゴリズムを Rust で実装した
+    * はじめての AI ―AI は AI でも Automata Inference の方だがなぁぁーっ !―
+    * Writing a (micro)kernel in Rust in 12 days - 2.5th day -
+    * 粘菌で計算がしたい！
+    * 真矛盾主義入門
+  }
+  +p-noindent{\bold{書籍+電子版/電子版: \large{各1000円}}}
+  >
+  +p{}
+  +p{}
+  +twocolumn ?:(0.6) <
+  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.2}}}
+  +listing-with-gap(0mm) {
+    * けもフレbotを支える技術
+    * RustでOSをつくる
+    * 定理証明支援系を作ろう
+    * Belugaによる定理証明
+    * 多段階計算の型システム
+    * 時間オートマトン入門
+    * Twitchゲーム配信観戦ガイド
+  }
+  +p-noindent{\bold{DLカード (電子版のみ): \large{1000円}}}
+  > <
+  +front-image(`./images/yabaitechvol2.jpg`);
+  >
+  +p{}
+  +p{}
+  +twocolumn ?:(0.4) <
+  +front-image(`./images/yabaitechvol1.jpg`);
+  > <
+  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.1}}}
+  +listing-with-gap(10mm) {
+    * RNNからのオートマトン学習
+    * "Schemeにおけるスタックフレームの実装(Draft)"を実装する
+    * 自然な様相論理をつくる
+  }
+  +p-noindent{\bold{DLカード (電子版のみ): \large{500円}}}
+  >
+ >

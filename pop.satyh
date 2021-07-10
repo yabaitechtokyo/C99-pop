@@ -1,0 +1,517 @@
+% -*- coding: utf-8 -*-
+@require: pervasives
+@require: gr
+@require: list
+@require: option
+@require: math
+@require: color
+@require: vdecoset
+@require: footnote-scheme
+
+% SATySFi-base
+@require: base/context
+@require: base/block
+@require: base/inline
+@require: base/image
+
+module Pop : sig
+
+  val document : block-text -> document
+
+  val font-latin-roman  : string * float * float
+  val font-latin-italic : string * float * float
+  val font-latin-bold   : string * float * float
+  val font-latin-mono   : string * float * float
+  val font-cjk-mincho   : string * float * float
+  val font-cjk-gothic   : string * float * float
+  val set-latin-font : (string * float * float) -> context -> context
+  val set-cjk-font   : (string * float * float) -> context -> context
+  val get-latin-font-size : context -> length
+  val get-cjk-font-size : context -> length
+  direct +p-noindent : [inline-text] block-cmd
+  direct +p : [inline-text] block-cmd
+  direct +front-image : [string] block-cmd
+
+  direct \emph : [inline-text] inline-cmd
+  direct \bold : [inline-text] inline-cmd
+  direct \Large : [inline-text] inline-cmd
+  direct \large : [inline-text] inline-cmd
+  direct \roman : [inline-text] inline-cmd
+  direct \mono : [inline-text] inline-cmd
+  direct \footnote : [inline-text] inline-cmd
+  direct +tabbedblock : [length?; (inline-text * block-text) list] block-cmd
+  direct +description : [(inline-text * inline-text) list] block-cmd
+  direct +twocolumn : [float?; block-text; block-text] block-cmd
+
+  direct +listing-with-gap : [bool?; length; itemize] block-cmd
+  direct \listing-with-gap : [bool?; length; itemize] inline-cmd
+  direct +enumerate-with-gap : [length; itemize] block-cmd
+  direct \enumerate-with-gap : [length; itemize] inline-cmd
+  direct \promote-linebreak : [] inline-cmd
+end = struct
+
+  let-inline ctx \promote-linebreak =
+    discretionary (0-100000) inline-nil inline-nil inline-nil
+
+  let slateblue = Color.rgb 0.17 0.22 0.34
+
+  let font-size-normal  = 13pt
+  let font-size-large   = 18pt
+  let font-size-Large   = 30pt
+
+  let toc-section-indent = 20pt
+  let toc-subsection-indent = 40pt
+
+  let font-ratio-latin = 1.
+  let font-ratio-cjk = 0.88
+
+  let font-latin-roman  = (`Junicode`   , font-ratio-latin, 0.)
+  let font-latin-italic = (`Junicode-it`, font-ratio-latin, 0.)
+  let font-latin-bold   = (`fonts-noto-sans:NotoSans-Bold` , font-ratio-latin, 0.)
+  let font-latin-sans   = (`lmsans`    , font-ratio-latin, 0.)
+  let font-latin-mono   = (`lmmono`    , font-ratio-latin, 0.)
+  let font-cjk-mincho   = (`ipaexm`    , font-ratio-cjk  , 0.)
+  let font-cjk-gothic   = (`ipaexg`    , font-ratio-cjk  , 0.)
+  let font-otherscript-roman = (`cmunrm` , font-ratio-latin, 0.)
+
+
+  let set-latin-font font ctx =
+    ctx |> set-font Latin font
+
+
+  let set-cjk-font font ctx =
+    ctx |> set-font HanIdeographic font
+        |> set-font Kana           font
+
+
+  let get-latin-font-size ctx =
+    get-font-size ctx *' font-ratio-latin
+
+
+  let get-cjk-font-size ctx =
+    get-font-size ctx *' font-ratio-cjk
+
+
+  let-inline ctx \roman inner =
+    read-inline (ctx |> set-latin-font font-latin-roman) inner
+
+  let-inline ctx \mono inner =
+    read-inline (ctx |> set-latin-font font-latin-mono) inner
+
+
+  let get-standard-context wid =
+    get-initial-context wid (command \math)
+      |> set-dominant-wide-script Kana
+      |> set-language Kana Japanese
+      |> set-language HanIdeographic Japanese
+      |> set-dominant-narrow-script Latin
+      |> set-language Latin English
+      |> set-font Kana           font-cjk-gothic
+      |> set-font HanIdeographic font-cjk-gothic
+      |> set-font Latin          font-latin-sans
+      |> set-font OtherScript    font-otherscript-roman
+      |> set-math-font `fonts-asana-math:AsanaMath`
+      |> set-hyphen-penalty 1000
+      |> set-space-ratio 0.275 0.08 0.12
+      |> set-font-size font-size-normal
+
+  let-mutable ref-float-boxes <- []
+
+
+  let height-of-float-boxes pageno =
+%    let () = display-message `get height` in
+    (!ref-float-boxes) |> List.fold-left (fun h (pn, bb) -> (
+      if pn < pageno then h +' (get-natural-length bb) else h
+    )) 0pt
+
+
+  let-mutable toc-acc-ref <- []
+
+
+  let get-cross-reference-number prefix label =
+    match get-cross-reference (prefix ^ label ^ `:num`) with
+    | None    -> `?`
+    | Some(s) -> s
+
+
+  let-inline ctx \dummy it =
+    let ib = read-inline (ctx |> set-text-color Color.white) it in
+    let w = get-natural-width ib in
+      ib ++ inline-skip (0pt -' w)
+
+
+  let-rec repeat-inline n ib =
+    if n <= 0 then inline-nil else
+      ib ++ (repeat-inline (n - 1) ib)
+
+
+  let make-dots-line ctx w =
+    let ib = read-inline ctx {.} ++ inline-skip 1pt in
+    let wdot = get-natural-width ib in
+    let n = round (w /' wdot) in
+      inline-fil ++ (repeat-inline n ib)
+
+
+  let-mutable show-page-number-ref <- Some(1)
+
+  let-inline ctx \url it =
+    read-inline (ctx |> set-latin-font font-latin-mono) it
+
+  let paper-width = 182mm
+  let paper-height = 257mm
+  let top-margin = 10mm
+  let bottom-margin = 10mm
+  let side-margin = 20mm
+  let paper-size = UserDefinedPaper(paper-width, paper-height)
+  let text-origin = (side-margin, top-margin)
+  let text-width = paper-width -' (side-margin *' 2.0)
+  let text-height = paper-height -' top-margin -' bottom-margin
+  let header-origin = (side-margin, top-margin)
+  let header-width = text-width
+  let footer-origin = (side-margin, paper-height -' bottom-margin)
+  let footer-width = text-width
+  let footnote-indent = 6mm
+
+  let document inner =
+    % -- constants --
+    let page = paper-size in
+    let txtorg = text-origin in
+    let txtwid = text-width in
+    let txthgt = text-height in
+    let hdrorg = header-origin in
+    let ftrorg = footer-origin in
+    let hdrwid = header-width in
+    let ftrwid = footer-width in
+
+    let ctx-doc =
+      get-standard-context txtwid
+        |> set-font-size font-size-normal
+        |> set-leading 18pt
+        |> set-hyphen-penalty 1000
+        |> set-paragraph-margin 5pt 5pt
+    in
+
+    % -- main --
+    let bb-main = read-block ctx-doc inner in
+
+    % -- page settings --
+    let pagecontf pbinfo =
+      let () = FootnoteScheme.start-page () in
+      let hgtfb = height-of-float-boxes pbinfo#page-number in
+      let (txtorgx, txtorgy) = txtorg in
+      (|
+        text-origin = (txtorgx, txtorgy +' hgtfb);
+        text-height = txthgt -' hgtfb;
+      |)
+    in
+    let pagepartsf pbinfo =
+      let pageno = pbinfo#page-number in
+      let header =
+        let ctx =
+          get-standard-context hdrwid
+            |> set-paragraph-margin 0pt 0pt
+        in
+        let (bb-float-boxes, acc) =
+          (!ref-float-boxes) |> List.fold-left (fun (bbacc, acc) elem -> (
+            let (pn, bb) = elem in
+              if pn < pageno then
+                let bbs =
+                  line-break true true (ctx |> set-paragraph-margin 0pt 12pt)
+                    (inline-fil ++ embed-block-top ctx txtwid (fun _ -> bb) ++ inline-fil)
+                      % 'ctx' is a dummy context
+                in
+                  (bbacc +++ bbs, acc)
+              else
+                (bbacc, elem :: acc)
+          )) (block-nil, [])
+        in
+        let () = ref-float-boxes <- acc in
+          bb-float-boxes
+      in
+      let footer =
+        match !show-page-number-ref with
+        | Some(pagenolast) ->
+            let ctx = get-standard-context ftrwid in
+            let it-pageno = embed-string (arabic (pageno - pagenolast + 1)) in
+              line-break true true ctx
+                (inline-fil ++ (read-inline ctx {— #it-pageno; —}) ++ inline-fil)
+
+        | None ->
+            block-nil
+      in
+        (|
+          header-origin  = hdrorg;
+          header-content = header;
+          footer-origin  = ftrorg;
+          footer-content = Block.nil;
+        |)
+    in
+      page-break page pagecontf pagepartsf bb-main
+
+
+  let-block ctx +p-noindent inner =
+    let ib-inner = read-inline ctx inner ++ inline-fil in
+      form-paragraph ctx ib-inner
+
+  let-block ctx +front-image path =
+    Image.of-jpeg path |>
+      Inline.of-image (text-width *' 0.35) |>
+      form-paragraph ctx
+
+  let-block ctx +p inner =
+    let len = get-font-size ctx *' font-ratio-cjk in
+    let ib-inner = inline-skip len ++ read-inline ctx inner ++ inline-fil in
+      form-paragraph ctx ib-inner
+
+  let-inline ctx \emph inner =
+    let ctx-emph =
+      ctx |> set-font Latin font-latin-italic
+          |> set-cjk-font font-cjk-gothic
+    in
+      read-inline ctx-emph inner
+
+  let-inline ctx \bold inner =
+    let ctx-bold =
+      ctx |> set-font Latin font-latin-bold
+          |> set-cjk-font font-cjk-gothic
+    in
+      read-inline ctx-bold inner
+      
+  let-inline ctx \large inner =
+    let ctx-large =
+      ctx |> set-font-size font-size-large
+    in
+      Inline.read inner ctx-large
+      
+  let-inline ctx \Large inner =
+    let ctx-Large =
+      ctx |> set-font-size font-size-Large
+    in
+      Inline.read inner ctx-Large
+
+  let generate-footnote-label n =
+    `footnote:` ^ (arabic n)
+
+  let (+++>) = List.fold-left (+++)
+
+  let (+++>) = List.fold-left (+++)
+  let concat-blocks = (+++>) block-nil
+
+
+  let item-indent = 16pt
+  let item-gap = 10pt
+
+
+  let bullet color (x, y) =
+    let cx = x +' 4pt in
+    let cy = y +' 4pt in
+    let r = 2pt in
+      [ fill color (Gr.circle (cx, cy) r); ]
+
+
+  let-rec listing-item : context -> int -> itemize -> block-boxes
+    | ctx depth (Item(parent, children)) =
+        let color = get-text-color ctx in
+        let ib-bullet = inline-graphics 8pt 8pt 0pt (bullet color) ++ inline-skip 8pt in
+        let bullet-width = get-natural-width ib-bullet in
+        let parent-indent = item-indent *' (float depth) in
+        let ib-parent =
+          embed-block-top ctx ((get-text-width ctx) -' parent-indent -' bullet-width) (fun ctx ->
+            form-paragraph (ctx |> set-paragraph-margin item-gap item-gap)
+              (read-inline ctx parent ++ inline-fil)
+          )
+        in
+        let bb-parent =
+          form-paragraph (ctx |> set-paragraph-margin item-gap item-gap)
+            ((inline-skip parent-indent) ++ ib-bullet ++ ib-parent)
+        in
+        let bblst-children = List.map (listing-item ctx (depth + 1)) children in
+        bb-parent +++> bblst-children
+
+
+  let-rec listing-item-breakable
+    | ctx depth (Item(parent, children)) =
+        let color = get-text-color ctx in
+        let ib-bullet = inline-graphics 8pt 8pt 0pt (bullet color) ++ inline-skip 8pt in
+        let bullet-width = get-natural-width ib-bullet in
+        let parent-indent = item-indent *' (float depth) in
+        let pads = (parent-indent +' bullet-width, 0pt, 0pt, 0pt) in
+        let decos =
+          let deco _ _ _ _ = [] in
+          (deco, deco, deco, deco)
+        in
+        let bb-parent =
+          block-frame-breakable (ctx |> set-paragraph-margin item-gap item-gap) pads decos (fun ctx ->
+            form-paragraph ctx
+              (inline-skip (0pt -' bullet-width) ++ ib-bullet ++ read-inline ctx parent ++ inline-fil)
+          )
+        in
+        let bblst-children = List.map (listing-item-breakable ctx (depth + 1)) children in
+        bb-parent +++> bblst-children
+
+
+  let listing break ctx outer-gap (Item(_, itmzlst)) =
+    if break then
+      let bblst = List.map (listing-item-breakable ctx 0) itmzlst in
+      block-skip outer-gap +++ concat-blocks bblst +++ block-skip outer-gap
+    else
+      let bblst = List.map (listing-item ctx 0) itmzlst in
+      block-skip outer-gap +++ concat-blocks bblst +++ block-skip outer-gap
+
+
+  let-block ctx +listing-with-gap ?:breakopt outer-gap item =
+    let break = Option.from false breakopt in
+    listing break ctx outer-gap item
+
+
+  let-inline ctx \listing-with-gap ?:breakopt outer-gap item =
+    let break = Option.from false breakopt in
+      inline-fil ++ embed-block-breakable ctx (listing break ctx outer-gap item)
+        ++ omit-skip-after
+
+  let-rec enumerate-item : int -> context -> int -> itemize -> block-boxes
+    | index ctx depth (Item(parent, _)) =
+        let color = get-text-color ctx in
+        let parent-indent = item-indent *' (float depth) in
+        let ib-index =
+          let it-num = (embed-string (arabic index)) in
+            read-inline ctx {(#it-num;)\ }
+        in
+        let index-width = get-natural-width ib-index in
+        let ib-parent =
+          embed-block-top ctx ((get-text-width ctx) -' parent-indent -' index-width) (fun ctx ->
+            form-paragraph (ctx |> set-paragraph-margin item-gap item-gap)
+              (read-inline ctx parent ++ inline-fil)
+          )
+        in
+          form-paragraph (ctx |> set-paragraph-margin item-gap item-gap)
+            ((inline-skip parent-indent) ++ ib-index ++ ib-parent)
+
+
+  let enumerate ctx outer-gap (Item(_, itmzlst)) =
+    let bblst = List.mapi (fun i -> enumerate-item (i + 1) ctx 0) itmzlst in
+    concat-blocks bblst
+
+
+  let-block ctx +enumerate-with-gap outer-gap item =
+    enumerate ctx outer-gap item
+
+
+  let-inline ctx \enumerate-with-gap outer-gap item =
+    let bb = enumerate ctx outer-gap item in
+    inline-fil ++
+      embed-block-breakable ctx
+        (block-skip outer-gap +++ bb +++ block-skip outer-gap)
+      ++ omit-skip-after
+
+  let tabbedblock ctx indent pair-list =
+    let block-list =
+      pair-list |> List.map (fun (head, body) -> (
+        let inline-head =
+          let ctx-head =
+            ctx |> set-font Latin font-latin-bold
+          in
+            Inline.read head ctx-head
+        in
+        let inline-head-paragraph-box =
+          embed-block-top ctx indent (fun ctx ->
+            form-paragraph ctx (inline-head ++ Inline.fil)) in
+        let text-width = Context.get-text-width ctx in
+        let margin-width = (Context.get-font-size ctx) *' 0.5 in
+        let body-width = (text-width -' indent -' margin-width) in
+        let inline-body-paragraph-box =
+          embed-block-top ctx body-width (Block.read body)
+        in
+          form-paragraph ctx (inline-head-paragraph-box ++ (Inline.skip margin-width) ++ inline-body-paragraph-box)
+      ) +++ Block.skip ((get-font-size ctx) *' 0.05))
+    in
+      Block.skip 0pt +++> block-list
+
+  let-block ctx +tabbedblock ?:indentopt pairlst =
+    let indent = 
+        match indentopt with
+        | None -> 50pt 
+        | Some(indent) -> indent
+    in
+      tabbedblock ctx indent pairlst
+
+  let description ctx pairlst =
+    let indent = 24pt in
+    let bclst =
+      pairlst |> List.map (fun (item, descr) -> (
+        let br-item =
+          let ctx-item =
+            ctx |> set-font Latin font-latin-bold
+          in
+            read-inline ctx-item item
+        in
+        let br-descr = read-inline ctx descr in
+        let br-pbox =
+          embed-block-top ctx ((get-text-width ctx) -' indent) (fun ctx ->
+            form-paragraph ctx ((inline-skip (0pt -' indent)) ++ br-item ++ (inline-skip 8pt) ++ br-descr ++ inline-fil)
+          )
+        in
+          form-paragraph ctx ((inline-skip indent) ++ br-pbox)
+      ))
+    in
+    block-nil +++> bclst
+
+  let-block ctx +description pairlst =
+    description ctx pairlst
+
+  let-block ctx +twocolumn ?:ratio left-block right-block =
+    let ratio = 
+        match ratio with
+        | None -> 0.65
+        | Some(ratio) -> ratio in
+    let margin = ((get-font-size ctx) *' 3.0) in
+    let left-column-width = ((get-text-width ctx) -' margin) *' ratio in
+    let right-column-width = ((get-text-width ctx) -' margin) *' (1.0 -. ratio) in
+    let br-left-pbox =
+      embed-block-bottom ctx left-column-width (fun ctx -> read-block ctx left-block) in
+    let br-right-pbox =
+      embed-block-bottom ctx right-column-width (fun ctx -> read-block ctx right-block) in
+    form-paragraph ctx (br-left-pbox ++ (inline-skip margin) ++ br-right-pbox)
+
+  let-inline ctx \footnote it =
+    let ibf num =
+      let it-num = embed-string (arabic num) in
+      let ctx =
+        let size = get-font-size ctx in
+          ctx |> set-font-size (size *' 0.75)
+              |> set-manual-rising (size *' 0.25)
+      in
+        read-inline ctx {\*#it-num;}
+    in
+    let bbf num =
+      let ib-num = read-inline ctx (embed-string (arabic num)) in
+      let ctx =
+        let size = 12pt in
+          get-standard-context text-width
+            |> set-font-size (size *' 0.9)
+            |> set-leading (size *' 1.2)
+            |> set-paragraph-margin (size *' 0.5) (size *' 0.5)
+      in
+      let len =
+        let (w, _, _) = get-natural-metrics ib-num in
+          footnote-indent -' w
+      in
+      let ib =
+        ib-num ++ inline-skip len ++
+          embed-block-top ctx (text-width -' footnote-indent) (fun ctx -> (
+            line-break false false ctx (read-inline ctx it ++ inline-fil)
+          ))
+      in
+        line-break false false ctx (ib ++ inline-fil)
+    in
+      FootnoteScheme.main ctx ibf bbf
+
+    let-rec fold-authors authors-text authors-list = 
+    match authors-list with
+    | [] -> authors-text
+    | author :: [] -> {#authors-text;, #author;}
+    | author :: xs -> fold-authors {#authors-text;, #author;} xs
+
+end
+
+let document = Pop.document
