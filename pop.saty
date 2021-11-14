@@ -5,8 +5,20 @@
 
 document '<
   +twocolumn ?:(0.4) <
-  +front-image(`./images/yabaitechvol6.jpg`);
+  +front-image(`./images/yabaitechvol7.jpg`);
   > <
+  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.7}}}
+  +listing-with-gap(4mm) {
+    * ぞうのたまごはおいしいぞう
+    * ぞうのたまごはおいしいぞう
+    * ぞうのたまごはおいしいぞう
+  }
+  +p-noindent{\bold{書籍+電子版: \large{1500円}}}
+  +p{}
+  +p-noindent{\bold{電子版のみ: \large{1000円}}}
+  >
+  +p{}
+  +twocolumn ?:(0.65) <
   +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.6}}}
   +listing-with-gap(4mm) {
     * テキサスホールデムの役判定に見る高速化テクニック
@@ -16,9 +28,13 @@ document '<
   +p-noindent{\bold{書籍+電子版: \large{1500円}}}
   +p{}
   +p-noindent{\bold{電子版のみ: \large{1000円}}}
+  > <
+  +front-image(`./images/yabaitechvol6.jpg`);
   >
   +p{}
-  +twocolumn ?:(0.65) <
+  +twocolumn ?:(0.4) <
+  +front-image(`./images/yabaitechvol5.jpg`);
+  > <
   +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.5}}}
   +listing-with-gap(0mm) {
      * ”Python” Cookbook: Recipes for Eating Python
@@ -28,66 +44,62 @@ document '<
   }
   +p-noindent{\bold{書籍+電子版: \large{1200円}}}
   +p-noindent{\bold{電子版のみ: \large{1000円}}}
-  > <
-  +front-image(`./images/yabaitechvol5.jpg`);
   >
   +p{}
-  +twocolumn ?:(0.35) <
-  +front-image(`./images/yabaitechvol4.jpg`);
+  %%%%%%%%%%%%%%%%%%%%% 2枚目 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  +twocolumn ?:(0.3) <
+  +front-image-old(`./images/yabaitechvol4.jpg`);
   > <
-  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.4}}}
+  +vol-old(4);
   +listing-with-gap(0mm) {
-     * ゲーム紹介記事 ー忙しくないプログラマのためのー
-     * 複数マシンでの実験をAnsibleとかでシュッとした話 ー実験編ー
-     * (おまけ記事) Let's verify your C program!
-     * あとがき ーyabaitech.tokyoを支える技術ー
+     * \small{ゲーム紹介記事 ー忙しくないプログラマのためのー}
+     * \small{複数マシンでの実験をAnsibleとかでシュッとした話 ー実験編ー}
+     * \small{(おまけ記事) Let's verify your C program!}
+     * \small{あとがき ーyabaitech.tokyoを支える技術ー}
   }
   +p-noindent{\bold{書籍+電子版: \large{800円}}}
   +p-noindent{\bold{電子版のみ: \large{500円}}}
   >
-
-  %%%%%%%%%%%%%%%%%%%%% 2枚目 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  +twocolumn ?:(0.4) <
-  +front-image(`./images/yabaitechvol3.jpg`);
-  > <
-  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.3}}}
+  +p{}
+  +twocolumn ?:(0.76) <
+  +vol-old(3);
   +listing-with-gap(0mm) {
-    * Schreier-Sims のアルゴリズムを Rust で実装した
-    * はじめての AI ―AI は AI でも Automata Inference の方だがなぁぁーっ !―
-    * Writing a (micro)kernel in Rust in 12 days - 2.5th day -
-    * 粘菌で計算がしたい！
-    * 真矛盾主義入門
+    * \small{Schreier-Sims のアルゴリズムを Rust で実装した}
+    * \small{はじめての AI ―AI は AI でも Automata Inference の方だがなぁぁーっ !―}
+    * \small{Writing a (micro)kernel in Rust in 12 days - 2.5th day -}
+    * \small{粘菌で計算がしたい！}
+    * \small{真矛盾主義入門}
   }
   +p-noindent{\bold{書籍+電子版/電子版: \large{各1000円}}}
-  >
-  +p{}
-  +p{}
-  +twocolumn ?:(0.6) <
-  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.2}}}
-  +listing-with-gap(0mm) {
-    * けもフレbotを支える技術
-    * RustでOSをつくる
-    * 定理証明支援系を作ろう
-    * Belugaによる定理証明
-    * 多段階計算の型システム
-    * 時間オートマトン入門
-    * Twitchゲーム配信観戦ガイド
-  }
-  +p-noindent{\bold{電子版: \large{1000円}}}
   > <
-  +front-image(`./images/yabaitechvol2.jpg`);
+  +front-image-old(`./images/yabaitechvol3.jpg`);
   >
-  +p{}
   +p{}
   +twocolumn ?:(0.4) <
-  +front-image(`./images/yabaitechvol1.jpg`);
+  +front-image-old(`./images/yabaitechvol2.jpg`);
   > <
-  +p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.1}}}
+  +vol-old(2);
+  +listing-with-gap(0mm) {
+    * \small{けもフレbotを支える技術}
+    * \small{RustでOSをつくる}
+    * \small{定理証明支援系を作ろう}
+    * \small{Belugaによる定理証明}
+    * \small{多段階計算の型システム}
+    * \small{時間オートマトン入門}
+    * \small{Twitchゲーム配信観戦ガイド}
+  }
+  +p-noindent{\bold{電子版: \large{1000円}}}
+  >
+  +p{}
+  +twocolumn ?:(0.6) <
+  +vol-old(1);
   +listing-with-gap(10mm) {
-    * RNNからのオートマトン学習
-    * 自然な様相論理をつくる
+    * \small{RNNからのオートマトン学習}
+    * \small{自然な様相論理をつくる}
   }
   +p-noindent{\bold{電子版: \large{500円}}}
+  > <
+  +front-image-old(`./images/yabaitechvol1.jpg`);
   >
  >
