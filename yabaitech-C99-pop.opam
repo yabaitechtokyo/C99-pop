@@ -1,0 +1,28 @@
+opam-version: "2.0"
+name: "yabaitech_C99_pop"
+version: "0.0.1"
+synopsis: "Pop of yabaitech.tokyo for C99"
+description: """
+"""
+maintainer: "Masaki Waga <masakiwaga@gmail.com>"
+authors: [
+    "Masaki Waga"
+    "Yuito Murase"
+]
+license: "MIT"
+homepage: "https://github.com/yabaitechtokyo/C99-pop"
+bug-reports: "https://github.com/yabaitechtokyo/C99-pop/issues"
+dev-repo: "git+https://github.com/yabaitechtokyo/C99-pop.git"
+depends: [
+  "satysfi" {= "0.0.6"}
+  "satyrographos" {>= "0.0.2.7" & < "0.0.3"}
+  "satysfi-base" {>= "1.2.1" & < "2.0.0"}
+  "satysfi-fonts-noto-sans" {>= "2.000"}
+]
+build: [ ]
+install: [
+  ["satyrographos" "opam" "install"
+   "--name" "yabaitech-C99-pop"
+   "--prefix" "%{prefix}%"
+   "--script" "%{build}%/Satyristes"]
+]

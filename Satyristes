@@ -1,0 +1,9 @@
+(version "0.0.2")
+(library
+  (name "yabaitech-C99-pop")
+  (version "0.0.1")
+  (sources ())
+  (opam "yabaitech-C99-pop.opam")
+  (dependencies (
+      (base ())
+      (fonts-noto-sans ()))))
