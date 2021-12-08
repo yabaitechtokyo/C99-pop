@@ -9,7 +9,7 @@ document '<
     +front-image(`./images/yabaitechvol7.jpg`);
   > <
     +vol(7);
-    +listing-with-gap(4mm) {
+    +enumerate-with-gap(4mm) {
       * ぞうのたまごはおいしいぞう
       * ぞうのたまごはおいしいぞう
       * ぞうのたまごはおいしいぞう
@@ -21,7 +21,7 @@ document '<
   +linebreak;
   +parallel-bottom ?:(0.65) ?:(0.32) <
     +vol(6);
-    +listing-with-gap(4mm) {
+    +enumerate-with-gap(4mm) {
       * テキサスホールデムの役判定に見る高速化テクニック
       * GNU EmacsでLaTeX文書を書く話
       * 高速SATソルバーを支える技術
@@ -37,7 +37,7 @@ document '<
     +front-image(`./images/yabaitechvol5.jpg`);
   > <
     +vol(5);
-    +listing-with-gap(0mm) {
+    +enumerate-with-gap(0mm) {
        * ”Python” Cookbook: Recipes for Eating Python
        * SATySFi クラスファイル開発の『コードを書く』以外のTips
        * アスペクト指向プログラミングで C++ プログラム用モニタを実装した話
@@ -49,11 +49,11 @@ document '<
   +linebreak;
   %%%%%%%%%%%%%%%%%%%%% 2枚目 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  +parallel-bottom ?:(0.35) ?:(0.65) <
+  +parallel-bottom ?:(0.3) ?:(0.7) <
     +front-image-old(`./images/yabaitechvol4.jpg`);
   > <
     +vol-old(4);
-    +listing-with-gap(0mm) {
+    +enumerate-with-gap(0mm) {
        * \small{ゲーム紹介記事 ー忙しくないプログラマのためのー}
        * \small{複数マシンでの実験をAnsibleとかでシュッとした話 ー実験編ー}
        * \small{(おまけ記事) Let's verify your C program!}
@@ -65,7 +65,7 @@ document '<
   +linebreak;
   +parallel-bottom ?:(0.8) ?:(0.2) <
     +vol-old(3);
-    +listing-with-gap(0mm) {
+    +enumerate-with-gap(0mm) {
       * \small{Schreier-Sims のアルゴリズムを Rust で実装した}
       * \small{はじめての AI ーAI は AI でも Automata Inference の方だがなぁぁーっ !ー}
       * \small{Writing a (micro) kernel in Rust in 12 days ー2.5th dayー}
@@ -77,25 +77,30 @@ document '<
     +front-image-old(`./images/yabaitechvol3.jpg`);
   >
   +linebreak;
-  +parallel-bottom ?:(0.35) ?:(0.65) <
+  +parallel-bottom ?:(0.3) ?:(0.7) <
     +front-image-old(`./images/yabaitechvol2.jpg`);
   > <
     +vol-old(2);
-    +listing-with-gap(-3mm) {
-      * \small{けもフレbotを支える技術}
-      * \small{RustでOSをつくる}
-      * \small{定理証明支援系を作ろう}
-      * \small{Belugaによる定理証明}
-      * \small{多段階計算の型システム}
-      * \small{時間オートマトン入門}
-      * \small{Twitchゲーム配信観戦ガイド}
-    }
-   +price(`電子版のみ`)(1000);
+    +parallel <
+      +enumerate-with-gap(3mm) {
+        * \small{けもフレbotを支える技術}
+        * \small{RustでOSをつくる}
+        * \small{定理証明支援系を作ろう}
+        * \small{Belugaによる定理証明}
+      }
+    > <
+      +enumerate-with-gap?:(5)(3mm) {
+        * \small{多段階計算の型システム}
+        * \small{時間オートマトン入門}
+        * \small{Twitchゲーム配信観戦ガイド}
+      }
+    >
+    +price(`電子版のみ`)(1000);
   >
   +linebreak;
   +parallel-bottom ?:(0.8) ?:(0.2) <
     +vol-old(1);
-    +listing-with-gap(10mm) {
+    +enumerate-with-gap(10mm) {
       * \small{RNNからのオートマトン学習}
       * \small{自然な様相論理をつくる}
     }

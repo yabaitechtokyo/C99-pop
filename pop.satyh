@@ -74,7 +74,7 @@ module Pop : sig
 
   direct +listing-with-gap : [bool?; length; itemize] block-cmd
   direct \listing-with-gap : [bool?; length; itemize] inline-cmd
-  direct +enumerate-with-gap : [length; itemize] block-cmd
+  direct +enumerate-with-gap : [int?; length; itemize] block-cmd
   direct \enumerate-with-gap : [length; itemize] inline-cmd
 end = struct
   let font-size-small   = 9pt
@@ -383,7 +383,7 @@ end = struct
         let parent-indent = item-indent *' (float depth) in
         let ib-index =
           let it-num = (embed-string (arabic index)) in
-            read-inline ctx {(#it-num;)\ }
+            read-inline ctx {#it-num;.\ }
         in
         let index-width = get-natural-width ib-index in
         let ib-parent =
@@ -396,17 +396,17 @@ end = struct
             ((inline-skip parent-indent) ++ ib-index ++ ib-parent)
 
 
-  let enumerate ctx outer-gap (Item(_, itmzlst)) =
-    let bblst = List.mapi (fun i -> enumerate-item (i + 1) ctx 0) itmzlst in
-    concat-blocks bblst
+  let enumerate begin ctx outer-gap (Item(_, itmzlst)) =
+    let bblst = List.mapi (fun i -> enumerate-item (i + 1 + begin) ctx 0) itmzlst in
+      block-skip outer-gap +++ concat-blocks bblst +++ block-skip outer-gap
 
-
-  let-block ctx +enumerate-with-gap outer-gap item =
-    enumerate ctx outer-gap item
+  let-block ctx +enumerate-with-gap ?:begin-opt outer-gap item =
+    let begin = Option.unwrap-or 0 begin-opt in
+      enumerate begin ctx outer-gap item
 
 
   let-inline ctx \enumerate-with-gap outer-gap item =
-    let bb = enumerate ctx outer-gap item in
+    let bb = enumerate 0 ctx outer-gap item in
     inline-fil ++
       embed-block-breakable ctx
         (block-skip outer-gap +++ bb +++ block-skip outer-gap)
