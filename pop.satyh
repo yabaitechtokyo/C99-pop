@@ -6,7 +6,6 @@
 @require: math
 @require: color
 @require: vdecoset
-@require: footnote-scheme
 
 % SATySFi-base
 @require: base/context
@@ -28,12 +27,41 @@ module Pop : sig
   val set-cjk-font   : (string * float * float) -> context -> context
   val get-latin-font-size : context -> length
   val get-cjk-font-size : context -> length
+
+  %- @doc: {
+  %-   段落を挿入するコマンド
+  %- }
   direct +p-noindent : [inline-text] block-cmd
-  direct +p : [inline-text] block-cmd
+
+  %- @doc: {
+  %-   改行を挿入するコマンド
+  %- }
+  direct +linebreak : [] block-cmd
+
+  %- @doc: {
+  %-   表紙を表示するコマンド
+  %- }
   direct +front-image : [string] block-cmd
-  %% 古い版の表紙を表示するコマンド。小さめに出力される
+
+  %- @doc: {
+  %-   古い版の表紙を表示するコマンド。小さめに出力される
+  %- }
   direct +front-image-old : [string] block-cmd
+
+  %- @doc: {
+  %-   巻数を表示するコマンド
+  %- }
+  direct +vol : [int] block-cmd
+
+  %- @doc: {
+  %-   古い巻の巻数を表示するコマンド
+  %- }
   direct +vol-old : [int] block-cmd
+
+  %- @doc: {
+  %-   価格を表示するコマンド
+  %- }  
+  direct +price: [string?; string; int] block-cmd
 
   direct \emph : [inline-text] inline-cmd
   direct \bold : [inline-text] inline-cmd
@@ -43,23 +71,12 @@ module Pop : sig
   direct \small : [inline-text] inline-cmd
   direct \roman : [inline-text] inline-cmd
   direct \mono : [inline-text] inline-cmd
-  direct \footnote : [inline-text] inline-cmd
-  direct +tabbedblock : [length?; (inline-text * block-text) list] block-cmd
-  direct +description : [(inline-text * inline-text) list] block-cmd
-  direct +twocolumn : [float?; block-text; block-text] block-cmd
 
   direct +listing-with-gap : [bool?; length; itemize] block-cmd
   direct \listing-with-gap : [bool?; length; itemize] inline-cmd
   direct +enumerate-with-gap : [length; itemize] block-cmd
   direct \enumerate-with-gap : [length; itemize] inline-cmd
-  direct \promote-linebreak : [] inline-cmd
 end = struct
-
-  let-inline ctx \promote-linebreak =
-    discretionary (0-100000) inline-nil inline-nil inline-nil
-
-  let slateblue = Color.rgb 0.17 0.22 0.34
-
   let font-size-small   = 9pt
   let font-size-normal  = 13pt
   let font-size-large   = 18pt
@@ -123,45 +140,16 @@ end = struct
 
   let-mutable ref-float-boxes <- []
 
-
   let height-of-float-boxes pageno =
 %    let () = display-message `get height` in
     (!ref-float-boxes) |> List.fold-left (fun h (pn, bb) -> (
       if pn < pageno then h +' (get-natural-length bb) else h
     )) 0pt
 
-
-  let-mutable toc-acc-ref <- []
-
-
   let get-cross-reference-number prefix label =
     match get-cross-reference (prefix ^ label ^ `:num`) with
     | None    -> `?`
     | Some(s) -> s
-
-
-  let-inline ctx \dummy it =
-    let ib = read-inline (ctx |> set-text-color Color.white) it in
-    let w = get-natural-width ib in
-      ib ++ inline-skip (0pt -' w)
-
-
-  let-rec repeat-inline n ib =
-    if n <= 0 then inline-nil else
-      ib ++ (repeat-inline (n - 1) ib)
-
-
-  let make-dots-line ctx w =
-    let ib = read-inline ctx {.} ++ inline-skip 1pt in
-    let wdot = get-natural-width ib in
-    let n = round (w /' wdot) in
-      inline-fil ++ (repeat-inline n ib)
-
-
-  let-mutable show-page-number-ref <- Some(1)
-
-  let-inline ctx \url it =
-    read-inline (ctx |> set-latin-font font-latin-mono) it
 
   let paper-width = 182mm
   let paper-height = 257mm
@@ -176,7 +164,6 @@ end = struct
   let header-width = text-width
   let footer-origin = (side-margin, paper-height -' bottom-margin)
   let footer-width = text-width
-  let footnote-indent = 6mm
 
   let document inner =
     % -- constants --
@@ -185,9 +172,7 @@ end = struct
     let txtwid = text-width in
     let txthgt = text-height in
     let hdrorg = header-origin in
-    let ftrorg = footer-origin in
     let hdrwid = header-width in
-    let ftrwid = footer-width in
 
     let ctx-doc =
       get-standard-context txtwid
@@ -202,7 +187,6 @@ end = struct
 
     % -- page settings --
     let pagecontf pbinfo =
-      let () = FootnoteScheme.start-page () in
       let hgtfb = height-of-float-boxes pbinfo#page-number in
       let (txtorgx, txtorgy) = txtorg in
       (|
@@ -234,26 +218,14 @@ end = struct
         let () = ref-float-boxes <- acc in
           bb-float-boxes
       in
-      let footer =
-        match !show-page-number-ref with
-        | Some(pagenolast) ->
-            let ctx = get-standard-context ftrwid in
-            let it-pageno = embed-string (arabic (pageno - pagenolast + 1)) in
-              line-break true true ctx
-                (inline-fil ++ (read-inline ctx {— #it-pageno; —}) ++ inline-fil)
-
-        | None ->
-            block-nil
-      in
         (|
           header-origin  = hdrorg;
           header-content = header;
-          footer-origin  = ftrorg;
+          footer-origin  = footer-origin;
           footer-content = Block.nil;
         |)
     in
       page-break page pagecontf pagepartsf bb-main
-
 
   let-block ctx +p-noindent inner =
     let ib-inner = read-inline ctx inner ++ inline-fil in
@@ -269,10 +241,8 @@ end = struct
       Inline.of-image (text-width *' 0.25) |>
       form-paragraph ctx
 
-  let-block ctx +p inner =
-    let len = get-font-size ctx *' font-ratio-cjk in
-    let ib-inner = inline-skip len ++ read-inline ctx inner ++ inline-fil in
-      form-paragraph ctx ib-inner
+  let-block ctx +linebreak =
+    form-paragraph ctx inline-fil
 
   let-inline ctx \emph inner =
     let ctx-emph =
@@ -313,13 +283,22 @@ end = struct
     in
       Inline.read inner ctx-Large
 
+  let-block ctx +vol vol =
+    let vol-it = embed-string (String.of-int vol) in
+    let bt = '<+p-noindent{\mono{\large{yabaitech.tokyo}} \Large{\bold{vol.#vol-it;}}}> in
+      Block.read bt ctx
+
   let-block ctx +vol-old vol =
     let vol-it = embed-string (String.of-int vol) in
     let bt = '<+p-noindent{\mono{\normal{yabaitech.tokyo}} \large{\bold{vol.#vol-it;}}}> in
       Block.read bt ctx
 
-  let generate-footnote-label n =
-    `footnote:` ^ (arabic n)
+  let-block ctx +price ?:price-prfix-opt title price =
+    let price-prefix = Option.unwrap-or String.empty price-prfix-opt in
+    let title-it = embed-string title in
+    let price-it = embed-string (price-prefix ^ String.of-int price) in
+    let bt = '<+p-noindent{\bold{#title-it;: \large{#price-it;円}}}> in
+      Block.read bt ctx
 
   let (+++>) = List.fold-left (+++)
 
@@ -432,115 +411,6 @@ end = struct
       embed-block-breakable ctx
         (block-skip outer-gap +++ bb +++ block-skip outer-gap)
       ++ omit-skip-after
-
-  let tabbedblock ctx indent pair-list =
-    let block-list =
-      pair-list |> List.map (fun (head, body) -> (
-        let inline-head =
-          let ctx-head =
-            ctx |> set-font Latin font-latin-bold
-          in
-            Inline.read head ctx-head
-        in
-        let inline-head-paragraph-box =
-          embed-block-top ctx indent (fun ctx ->
-            form-paragraph ctx (inline-head ++ Inline.fil)) in
-        let text-width = Context.get-text-width ctx in
-        let margin-width = (Context.get-font-size ctx) *' 0.5 in
-        let body-width = (text-width -' indent -' margin-width) in
-        let inline-body-paragraph-box =
-          embed-block-top ctx body-width (Block.read body)
-        in
-          form-paragraph ctx (inline-head-paragraph-box ++ (Inline.skip margin-width) ++ inline-body-paragraph-box)
-      ) +++ Block.skip ((get-font-size ctx) *' 0.05))
-    in
-      Block.skip 0pt +++> block-list
-
-  let-block ctx +tabbedblock ?:indentopt pairlst =
-    let indent = 
-        match indentopt with
-        | None -> 50pt 
-        | Some(indent) -> indent
-    in
-      tabbedblock ctx indent pairlst
-
-  let description ctx pairlst =
-    let indent = 24pt in
-    let bclst =
-      pairlst |> List.map (fun (item, descr) -> (
-        let br-item =
-          let ctx-item =
-            ctx |> set-font Latin font-latin-bold
-          in
-            read-inline ctx-item item
-        in
-        let br-descr = read-inline ctx descr in
-        let br-pbox =
-          embed-block-top ctx ((get-text-width ctx) -' indent) (fun ctx ->
-            form-paragraph ctx ((inline-skip (0pt -' indent)) ++ br-item ++ (inline-skip 8pt) ++ br-descr ++ inline-fil)
-          )
-        in
-          form-paragraph ctx ((inline-skip indent) ++ br-pbox)
-      ))
-    in
-    block-nil +++> bclst
-
-  let-block ctx +description pairlst =
-    description ctx pairlst
-
-  let-block ctx +twocolumn ?:ratio left-block right-block =
-    let ratio = 
-        match ratio with
-        | None -> 0.65
-        | Some(ratio) -> ratio in
-    let margin = ((get-font-size ctx) *' 3.0) in
-    let left-column-width = ((get-text-width ctx) -' margin) *' ratio in
-    let right-column-width = ((get-text-width ctx) -' margin) *' (1.0 -. ratio) in
-    let br-left-pbox =
-      embed-block-bottom ctx left-column-width (fun ctx -> read-block ctx left-block) in
-    let br-right-pbox =
-      embed-block-bottom ctx right-column-width (fun ctx -> read-block ctx right-block) in
-    form-paragraph ctx (br-left-pbox ++ (inline-skip margin) ++ br-right-pbox)
-
-  let-inline ctx \footnote it =
-    let ibf num =
-      let it-num = embed-string (arabic num) in
-      let ctx =
-        let size = get-font-size ctx in
-          ctx |> set-font-size (size *' 0.75)
-              |> set-manual-rising (size *' 0.25)
-      in
-        read-inline ctx {\*#it-num;}
-    in
-    let bbf num =
-      let ib-num = read-inline ctx (embed-string (arabic num)) in
-      let ctx =
-        let size = 12pt in
-          get-standard-context text-width
-            |> set-font-size (size *' 0.9)
-            |> set-leading (size *' 1.2)
-            |> set-paragraph-margin (size *' 0.5) (size *' 0.5)
-      in
-      let len =
-        let (w, _, _) = get-natural-metrics ib-num in
-          footnote-indent -' w
-      in
-      let ib =
-        ib-num ++ inline-skip len ++
-          embed-block-top ctx (text-width -' footnote-indent) (fun ctx -> (
-            line-break false false ctx (read-inline ctx it ++ inline-fil)
-          ))
-      in
-        line-break false false ctx (ib ++ inline-fil)
-    in
-      FootnoteScheme.main ctx ibf bbf
-
-    let-rec fold-authors authors-text authors-list = 
-    match authors-list with
-    | [] -> authors-text
-    | author :: [] -> {#authors-text;, #author;}
-    | author :: xs -> fold-authors {#authors-text;, #author;} xs
-
 end
 
 let document = Pop.document

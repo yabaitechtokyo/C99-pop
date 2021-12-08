@@ -18,6 +18,7 @@ depends: [
   "satyrographos" {>= "0.0.2.7" & < "0.0.3"}
   "satysfi-base" {>= "1.2.1" & < "2.0.0"}
   "satysfi-fonts-noto-sans" {>= "2.000"}
+  "satysfi-parallel" {>= "0.2.0"}
 ]
 build: [ ]
 install: [

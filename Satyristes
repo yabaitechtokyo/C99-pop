@@ -6,4 +6,5 @@
   (opam "yabaitech-C99-pop.opam")
   (dependencies (
       (base ())
+      (parallel ())
       (fonts-noto-sans ()))))
