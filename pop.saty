@@ -49,7 +49,7 @@ document '<
   +linebreak;
   %%%%%%%%%%%%%%%%%%%%% 2枚目 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  +parallel-bottom ?:(0.3) ?:(0.7) <
+  +parallel-bottom ?:(0.35) ?:(0.65) <
     +front-image-old(`./images/yabaitechvol4.jpg`);
   > <
     +vol-old(4);
@@ -63,12 +63,12 @@ document '<
     +price(`電子版のみ`)(500);
   >
   +linebreak;
-  +parallel-bottom ?:(0.76) ?:(0.22) <
+  +parallel-bottom ?:(0.8) ?:(0.2) <
     +vol-old(3);
     +listing-with-gap(0mm) {
       * \small{Schreier-Sims のアルゴリズムを Rust で実装した}
-      * \small{はじめての AI ―AI は AI でも Automata Inference の方だがなぁぁーっ !―}
-      * \small{Writing a (micro)kernel in Rust in 12 days - 2.5th day -}
+      * \small{はじめての AI ーAI は AI でも Automata Inference の方だがなぁぁーっ !ー}
+      * \small{Writing a (micro) kernel in Rust in 12 days ー2.5th dayー}
       * \small{粘菌で計算がしたい！}
       * \small{真矛盾主義入門}
     }
@@ -77,11 +77,11 @@ document '<
     +front-image-old(`./images/yabaitechvol3.jpg`);
   >
   +linebreak;
-  +parallel-bottom ?:(0.3) ?:(0.7) <
+  +parallel-bottom ?:(0.35) ?:(0.65) <
     +front-image-old(`./images/yabaitechvol2.jpg`);
   > <
     +vol-old(2);
-    +listing-with-gap(0mm) {
+    +listing-with-gap(-3mm) {
       * \small{けもフレbotを支える技術}
       * \small{RustでOSをつくる}
       * \small{定理証明支援系を作ろう}
@@ -93,7 +93,7 @@ document '<
    +price(`電子版のみ`)(1000);
   >
   +linebreak;
-  +parallel-bottom ?:(0.76) ?:(0.22) <
+  +parallel-bottom ?:(0.8) ?:(0.2) <
     +vol-old(1);
     +listing-with-gap(10mm) {
       * \small{RNNからのオートマトン学習}
