@@ -9,3 +9,8 @@ opam pin add yabaitech-C99-pop.opam "file://$PWD"
 satyrographos install 
 satysfi pop.saty
 ```
+
+Result
+------
+
+![pop](./pop-1.svg)
