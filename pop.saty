@@ -5,11 +5,11 @@
 @import: pop
 
 document '<
-  +parallel-bottom ?:(0.4) ?:(0.58) <
-    +front-image(`./images/yabaitechvol7.jpg`);
+  +parallel-bottom ?:(0.45) ?:(0.55) <
+    +front-image-new(`./images/yabaitechvol7.jpg`);
   > <
     +vol(7);
-    +enumerate-with-gap(4mm) {
+    +enumerate-with-gap(0mm) {
       * チルノのパーフェクトフォワーディング (完全転送) 教室
       * 不完全情報ゲームのナッシュ均衡を CFR (Counterfactual Regret Minimization) アルゴリズムで求めよう
       * 炒め物のイディオム
@@ -20,9 +20,9 @@ document '<
     +price(`電子版のみ`)(1000);
   >
   +linebreak;
-  +parallel-bottom ?:(0.65) ?:(0.32) <
+  +parallel-bottom ?:(0.75) ?:(0.25) <
     +vol(6);
-    +enumerate-with-gap(4mm) {
+    +enumerate-with-gap(2mm) {
       * テキサスホールデムの役判定に見る高速化テクニック
       * GNU EmacsでLaTeX文書を書く話
       * 高速SATソルバーを支える技術
@@ -34,7 +34,7 @@ document '<
     +front-image(`./images/yabaitechvol6.jpg`);
   >
   +linebreak;
-  +parallel-bottom ?:(0.4) ?:(0.58) <
+  +parallel-bottom ?:(0.35) ?:(0.65) <
     +front-image(`./images/yabaitechvol5.jpg`);
   > <
     +vol(5);

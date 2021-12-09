@@ -39,6 +39,11 @@ module Pop : sig
   direct +linebreak : [] block-cmd
 
   %- @doc: {
+  %-   最新刊の表紙を表示するコマンド。大きめに出力される
+  %- }
+  direct +front-image-new : [string] block-cmd
+
+  %- @doc: {
   %-   表紙を表示するコマンド
   %- }
   direct +front-image : [string] block-cmd
@@ -231,9 +236,14 @@ end = struct
     let ib-inner = read-inline ctx inner ++ inline-fil in
       form-paragraph ctx ib-inner
 
+  let-block ctx +front-image-new path =
+    Image.of-jpeg path |>
+      Inline.of-image (text-width *' 0.43) |>
+      form-paragraph ctx
+
   let-block ctx +front-image path =
     Image.of-jpeg path |>
-      Inline.of-image (text-width *' 0.35) |>
+      Inline.of-image (text-width *' 0.3) |>
       form-paragraph ctx
 
   let-block ctx +front-image-old path =
