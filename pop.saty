@@ -11,7 +11,7 @@ document '<
     +vol(7);
     +enumerate-with-gap(0mm) {
       * チルノのパーフェクトフォワーディング (完全転送) 教室
-      * 不完全情報ゲームのナッシュ均衡を CFR (Counterfactual Regret Minimization) アルゴリズムで求めよう
+      * 不完全情報ゲームのナッシュ均衡を CFR アルゴリズムで求めよう
       * 炒め物のイディオム
       * 自作言語でオンライン対局ゲームを実装した話
     }
@@ -90,7 +90,7 @@ document '<
         * \small{Belugaによる定理証明}
       }
     > <
-      +enumerate-with-gap?:(5)(3mm) {
+      +enumerate-with-gap?:(4)(3mm) {
         * \small{多段階計算の型システム}
         * \small{時間オートマトン入門}
         * \small{Twitchゲーム配信観戦ガイド}
