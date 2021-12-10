@@ -14,6 +14,16 @@ jobs:
       with:
         submodules: true
 
+    - name: Build satysfi-parallel v0.2.0
+      run: |
+        export HOME=/root
+        eval $(opam env)
+        mkdir -p /tmp/satysfi-parallel
+        cd /tmp/satysfi-parallel
+        curl -L https://github.com/MasWag/satysfi-parallel/releases/download/v0.2.0/package.tar.gz | tar zxvf -
+        opam pin add satysfi-parallel "file://${PWD}"
+        satyrographos install
+
     - name: Install Satyrographos dependencies and fonts
       run: |
         export HOME=/root
