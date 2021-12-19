@@ -14,3 +14,5 @@ Result
 ------
 
 ![pop](./pop-1.svg)
+
+![pop](./pop-2.svg)
