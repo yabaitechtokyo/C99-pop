@@ -19,6 +19,7 @@ depends: [
   "satysfi-base" {>= "1.2.1" & < "2.0.0"}
   "satysfi-fonts-noto-sans" {>= "2.000"}
   "satysfi-parallel" {>= "0.2.0"}
+  "satysfi-latexcmds" {>= "0.1.0"}
 ]
 build: [ ]
 install: [

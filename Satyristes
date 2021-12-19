@@ -7,4 +7,5 @@
   (dependencies (
       (base ())
       (parallel ())
+      (latexcmds ())
       (fonts-noto-sans ()))))
