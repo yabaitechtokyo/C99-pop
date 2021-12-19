@@ -1,51 +1,57 @@
 % -*- coding: utf-8 -*-
 @require: itemize
+% parallel
 @require: parallel/parallel
+
+% latexcmds
+@require: latexcmds/latexcmds
 
 @import: pop
 
 document '<
+  +centering{\large{ヤバイテックトーキョー　  ２日目}　\huge{東N29b}}
+  +linebreak;
   +parallel-bottom ?:(0.45) ?:(0.55) <
     +front-image-new(`./images/yabaitechvol7.jpg`);
   > <
+    +p-noindent{\Large{【新刊】}}
     +vol(7);
-    +enumerate-with-gap(0mm) {
+    +enumerate-with-gap(3.5mm) {
       * チルノのパーフェクトフォワーディング (完全転送) 教室
       * 不完全情報ゲームのナッシュ均衡を CFR アルゴリズムで求めよう
       * 炒め物のイディオム
       * 自作言語Sesterlでオンライン対局ゲームを実装した話
     }
-    +price(`書籍+電子版`)(1500);
-    +linebreak;
-    +price(`電子版のみ`)(1000);
+    +p-noindent{\price(`書籍`)(1500);　　\price(`電子版`)(1000);}
+    % +price(`書籍`)(1500);
+    % % +linebreak;
+    % +price(`電子版`)(1000);
   >
   +linebreak;
   +parallel-bottom ?:(0.75) ?:(0.25) <
-    +vol(6);
-    +enumerate-with-gap(2mm) {
-      * テキサスホールデムの役判定に見る高速化テクニック
-      * GNU EmacsでLaTeX文書を書く話
-      * 高速SATソルバーを支える技術
+    +vol-old(6);
+    +enumerate-with-gap(5.5mm) {
+      * \small{テキサスホールデムの役判定に見る高速化テクニック}
+      * \small{GNU Emacsで\LaTeX;文書を書く話}
+      * \small{高速SATソルバーを支える技術}
     }
-    +price(`書籍+電子版`)(1500);
-    +linebreak;
-    +price(`電子版のみ`)(1000);
+    +p-noindent{\price(`書籍`)(1500);　　\price(`電子版`)(1000);}
+    % +linebreak;
   > <
-    +front-image(`./images/yabaitechvol6.jpg`);
+    +front-image-old(`./images/yabaitechvol6.jpg`);
   >
   +linebreak;
   +parallel-bottom ?:(0.35) ?:(0.65) <
-    +front-image(`./images/yabaitechvol5.jpg`);
+    +front-image-old(`./images/yabaitechvol5.jpg`);
   > <
-    +vol(5);
+    +vol-old(5);
     +enumerate-with-gap(0mm) {
-       * ”Python” Cookbook: Recipes for Eating Python
-       * SATySFi クラスファイル開発の『コードを書く』以外のTips
-       * アスペクト指向プログラミングで C++ プログラム用モニタを実装した話
-       * F-ing modulesの型検査とコンパイル手法
+       * \small{”Python” Cookbook: Recipes for Eating Python}
+       * \small{\SATySFi; クラスファイル開発の『コードを書く』以外のTips}
+       * \small{アスペクト指向プログラミングで C++ プログラム用モニタを実装した話}
+       * \small{F-ing modulesの型検査とコンパイル手法}
     }
-    +price(`書籍+電子版`)(1200);
-    +price(`電子版のみ`)(1000);
+    +price?:(`各`)(`書籍/電子版`)(1000);
   >
   +linebreak;
   %%%%%%%%%%%%%%%%%%%%% 2枚目 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -54,17 +60,16 @@ document '<
     +front-image-old(`./images/yabaitechvol4.jpg`);
   > <
     +vol-old(4);
-    +enumerate-with-gap(0mm) {
+    +enumerate-with-gap(3mm) {
        * \small{ゲーム紹介記事 ー忙しくないプログラマのためのー}
        * \small{複数マシンでの実験をAnsibleとかでシュッとした話 ー実験編ー}
        * \small{(おまけ記事) Let's verify your C program!}
        * \small{あとがき ーyabaitech.tokyoを支える技術ー}
     }
-    +price(`書籍+電子版`)(800);
-    +price(`電子版のみ`)(500);
+    +price?:(`各`)(`書籍/電子版`)(500);
   >
   +linebreak;
-  +parallel-bottom ?:(0.8) ?:(0.2) <
+  +parallel-bottom ?:(0.75) ?:(0.24) <
     +vol-old(3);
     +enumerate-with-gap(0mm) {
       * \small{Schreier-Sims のアルゴリズムを Rust で実装した}
@@ -73,7 +78,7 @@ document '<
       * \small{粘菌で計算がしたい！}
       * \small{真矛盾主義入門}
     }
-    +price?:(`各`)(`書籍+電子版/電子版のみ`)(1000);
+    +price?:(`各`)(`書籍/電子版`)(1000);
   > <
     +front-image-old(`./images/yabaitechvol3.jpg`);
   >
@@ -96,17 +101,25 @@ document '<
         * \small{Twitchゲーム配信観戦ガイド}
       }
     >
-    +price(`電子版のみ`)(1000);
+    +price(`電子版`)(1000);
   >
   +linebreak;
-  +parallel-bottom ?:(0.8) ?:(0.2) <
-    +vol-old(1);
-    +enumerate-with-gap(10mm) {
-      * \small{RNNからのオートマトン学習}
-      * \small{自然な様相論理をつくる}
-    }
-    +price(`電子版のみ`)(500);
+  +parallel-bottom ?:(0.7) ?:(0.265) <
+    +parallel-bottom ?:(0.6) ?:(0.4) <
+      +vol-old(1);
+      +enumerate-with-gap(10mm) {
+        * \small{RNNからのオートマトン学習}
+        * \small{自然な様相論理をつくる}
+      }
+      +price(`電子版`)(300);
+    > <
+      +front-image-old(`./images/yabaitechvol1.jpg`);
+    > 
   > <
-    +front-image-old(`./images/yabaitechvol1.jpg`);
+    +centerings {|
+      電子版は|
+      Boothから買えます
+    |}
+    +qr-image(`./images/qr20211219151921966.jpeg`);
   >
  >

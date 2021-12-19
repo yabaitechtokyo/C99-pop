@@ -54,6 +54,11 @@ module Pop : sig
   direct +front-image-old : [string] block-cmd
 
   %- @doc: {
+  %-   QRコードを出力する
+  %- }
+  direct +qr-image : [string] block-cmd
+
+  %- @doc: {
   %-   巻数を表示するコマンド
   %- }
   direct +vol : [int] block-cmd
@@ -67,9 +72,11 @@ module Pop : sig
   %-   価格を表示するコマンド
   %- }  
   direct +price: [string?; string; int] block-cmd
+  direct \price: [string?; string; int] inline-cmd
 
   direct \emph : [inline-text] inline-cmd
   direct \bold : [inline-text] inline-cmd
+  direct \huge : [inline-text] inline-cmd
   direct \Large : [inline-text] inline-cmd
   direct \large : [inline-text] inline-cmd
   direct \normal : [inline-text] inline-cmd
@@ -86,6 +93,7 @@ end = struct
   let font-size-normal  = 13pt
   let font-size-large   = 18pt
   let font-size-Large   = 30pt
+  let font-size-huge    = 42pt
 
   let toc-section-indent = 20pt
   let toc-subsection-indent = 40pt
@@ -251,6 +259,12 @@ end = struct
       Inline.of-image (text-width *' 0.25) |>
       form-paragraph ctx
 
+  let-block ctx +qr-image path =
+    (Inline.fil ++
+     (Image.of-jpeg path |> Inline.of-image (text-width *' 0.25)) ++
+     Inline.fil) |>
+      form-paragraph ctx
+
   let-block ctx +linebreak =
     form-paragraph ctx inline-fil
 
@@ -286,6 +300,11 @@ end = struct
     in
       Inline.read inner ctx-large
      
+  let-inline ctx \huge inner =
+    let ctx-Large =
+      ctx |> set-font-size font-size-huge
+    in
+      Inline.read inner ctx-Large
 
   let-inline ctx \Large inner =
     let ctx-Large =
@@ -302,6 +321,13 @@ end = struct
     let vol-it = embed-string (String.of-int vol) in
     let bt = '<+p-noindent{\mono{\normal{yabaitech.tokyo}} \large{\bold{vol.#vol-it;}}}> in
       Block.read bt ctx
+
+  let-inline ctx \price ?:price-prfix-opt title price =
+    let price-prefix = Option.unwrap-or String.empty price-prfix-opt in
+    let title-it = embed-string title in
+    let price-it = embed-string (price-prefix ^ String.of-int price) in
+    let it = {\bold{#title-it;: \large{#price-it;円}}} in
+      Inline.read it ctx
 
   let-block ctx +price ?:price-prfix-opt title price =
     let price-prefix = Option.unwrap-or String.empty price-prfix-opt in
